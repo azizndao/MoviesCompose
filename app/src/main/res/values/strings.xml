@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">Trailer</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="sort_title">Title</string>
+    <string name="sort_popularity">Popularity</string>
+    <string name="sort_release_date">Release</string>
+    <string name="sort_primary_release_date">Primary release</string>
+    <string name="sort_revenue">Revenue</string>
+    <string name="sort_vote_average">Vote average</string>
+    <string name="sort_vote_count">Vote count</string>
+    <string name="sort">Sort</string>
+
+    <string name="retry">Retry</string>
+    <string name="scroll_up">Scroll up</string>
+    <string name="search_movie">Search a movie</string>
+    <string name="sort_by">Sort by</string>
+    <string name="home">Home</string>
+    <string name="movie">Movie</string>
+    <string name="tv">Tv Show</string>
+    <string name="search">Search</string>
+    <string name="unknown">Unknown</string>
+    <string name="now_playing">Now Playing</string>
+    <string name="upcoming">Upcoming</string>
+    <string name="top_rated">Top rated</string>
+    <string name="popular">Popular</string>
+    <string name="movies">Movies</string>
+    <string name="aring_today">Aring today</string>
+    <string name="on_tv">On tv</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="no_overview">No overview</string>
+    <string name="images">Images</string>
+    <string name="videos">Videos</string>
+    <string name="similar">Similar</string>
+</resources>
