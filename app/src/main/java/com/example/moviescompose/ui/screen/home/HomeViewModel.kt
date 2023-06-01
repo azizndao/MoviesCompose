@@ -24,46 +24,46 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class HomeViewModel(
-    private val apiService: MovieApiService,
-    private val tvApiService: TVApiService,
-    preferences: UserPreferences
+  private val apiService: MovieApiService,
+  private val tvApiService: TVApiService,
+  preferences: UserPreferences
 ) : ViewModel() {
 
-    var uiState: UiState<HomeUiState> by mutableStateOf(UiState.Loading)
-        private set
+  var uiState: UiState<HomeUiState> by mutableStateOf(UiState.Loading)
+    private set
 
-    init {
-        refresh()
+  init {
+    refresh()
+  }
+
+  fun refresh() {
+    viewModelScope.launch {
+      uiState = try {
+        val popularMovie = apiService.getPopular(1).results.first()
+
+        val pagingConfig = PagingConfig(pageSize = 20, enablePlaceholders = true)
+
+        val moviePagingFlow = Pager(pagingConfig) {
+          TheMoviesPagingSource { apiService.getPopular(it) }
+        }.flow.map { it.map(Movie::toUiState) }.cachedIn(viewModelScope)
+
+        val tvPagingFlow = Pager(pagingConfig) {
+          TheMoviesPagingSource { tvApiService.getPopular(it) }
+        }.flow.map { it.map(TV::toUiState) }.cachedIn(viewModelScope)
+
+        UiState.Success(
+          HomeUiState(
+            popularMovie = popularMovie,
+            moviePagingItems = moviePagingFlow,
+            tvPagingItems = tvPagingFlow
+          )
+        )
+      } catch (e: Exception) {
+        Timber.e(e)
+        UiState.Error(e)
+      }
     }
+  }
 
-    fun refresh() {
-        viewModelScope.launch {
-            uiState = try {
-                val popularMovie = apiService.getPopular(1).results.first()
-
-                val pagingConfig = PagingConfig(pageSize = 20, enablePlaceholders = true)
-
-                val moviePagingFlow = Pager(pagingConfig) {
-                    TheMoviesPagingSource { apiService.getPopular(it) }
-                }.flow.map { it.map(Movie::toUiState) }.cachedIn(viewModelScope)
-
-                val tvPagingFlow = Pager(pagingConfig) {
-                    TheMoviesPagingSource { tvApiService.getPopular(it) }
-                }.flow.map { it.map(TV::toUiState) }.cachedIn(viewModelScope)
-
-                UiState.Success(
-                    HomeUiState(
-                        popularMovie = popularMovie,
-                        moviePagingItems = moviePagingFlow,
-                        tvPagingItems = tvPagingFlow
-                    )
-                )
-            } catch (e: Exception) {
-                Timber.e(e)
-                UiState.Error(e)
-            }
-        }
-    }
-
-    val sortFlow = preferences.sortFlow().stateIn(viewModelScope, SharingStarted.Eagerly, null)
+  val sortFlow = preferences.sortFlow().stateIn(viewModelScope, SharingStarted.Eagerly, null)
 }

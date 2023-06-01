@@ -28,7 +28,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.items
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
 import com.example.moviescompose.R
 import com.example.moviescompose.data.model.CardUiState
 import com.example.moviescompose.data.model.ITEM_TYPE_MOVIE
@@ -41,103 +42,110 @@ import org.koin.androidx.compose.getViewModel
 const val HOME_ROUTE = "home"
 
 fun NavGraphBuilder.homeDestination(showItem: (Long, String) -> Unit) {
-    composable(HOME_ROUTE) {
-        HomeScreen(showItem = showItem)
-    }
+  composable(HOME_ROUTE) {
+    HomeScreen(showItem = showItem)
+  }
 }
 
 @Composable
 private fun HomeScreen(
-    viewModel: HomeViewModel = getViewModel(),
-    showItem: (Long, String) -> Unit
+  viewModel: HomeViewModel = getViewModel(),
+  showItem: (Long, String) -> Unit
 ) {
-    Column(
+  Column(
+    modifier = Modifier
+      .verticalScroll(rememberScrollState())
+      .navigationBarsPadding()
+      .padding(bottom = 100.dp),
+    verticalArrangement = Arrangement.spacedBy(24.dp)
+  ) {
+    when (viewModel.uiState) {
+      UiState.Loading -> CircularProgressIndicator(
         modifier = Modifier
-            .verticalScroll(rememberScrollState())
-            .navigationBarsPadding()
-            .padding(bottom = 100.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
-    ) {
-        when (viewModel.uiState) {
-            UiState.Loading -> CircularProgressIndicator(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .statusBarsPadding()
-                    .padding(top = 70.dp)
-                    .wrapContentSize()
-            )
+          .fillMaxWidth()
+          .statusBarsPadding()
+          .padding(top = 70.dp)
+          .wrapContentSize()
+      )
 
-            is UiState.Error -> Column(
-                verticalArrangement = Arrangement.spacedBy(24.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 70.dp, start = 24.dp, end = 24.dp)
-                    .statusBarsPadding(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                val exception = (viewModel.uiState as UiState.Error).exception!!
+      is UiState.Error -> Column(
+        verticalArrangement = Arrangement.spacedBy(24.dp),
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(top = 70.dp, start = 24.dp, end = 24.dp)
+          .statusBarsPadding(),
+        horizontalAlignment = Alignment.CenterHorizontally
+      ) {
+        val exception = (viewModel.uiState as UiState.Error).exception!!
 
-                Text(
-                    text = exception.stackTraceToString(),
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
+        Text(
+          text = exception.stackTraceToString(),
+          modifier = Modifier.fillMaxWidth(),
+          textAlign = TextAlign.Center
+        )
 
-                Button(onClick = viewModel::refresh) {
-                    Text(stringResource(id = R.string.retry))
-                }
-            }
-
-            is UiState.Success -> {
-                val uiState = (viewModel.uiState as UiState.Success<HomeUiState>).data
-                val movie = uiState.popularMovie
-                HeadlineMovieItem(movie = uiState.popularMovie) {
-                    showItem(movie.id, ITEM_TYPE_MOVIE)
-                }
-
-                MoviesRow(
-                    R.string.movie,
-                    uiState.moviePagingItems.collectAsLazyPagingItems(),
-                ) { movieId -> showItem(movieId, ITEM_TYPE_MOVIE) }
-
-                MoviesRow(
-                    R.string.tv,
-                    uiState.tvPagingItems.collectAsLazyPagingItems()
-                ) { movieId ->
-                    showItem(movieId, ITEM_TYPE_TV_SHOW)
-                }
-            }
+        Button(onClick = viewModel::refresh) {
+          Text(stringResource(id = R.string.retry))
         }
+      }
+
+      is UiState.Success -> {
+        val uiState = (viewModel.uiState as UiState.Success<HomeUiState>).data
+        val movie = uiState.popularMovie
+        HeadlineMovieItem(movie = uiState.popularMovie) {
+          showItem(movie.id, ITEM_TYPE_MOVIE)
+        }
+
+        MoviesRow(
+          R.string.movie,
+          uiState.moviePagingItems.collectAsLazyPagingItems(),
+        ) { movieId -> showItem(movieId, ITEM_TYPE_MOVIE) }
+
+        MoviesRow(
+          R.string.tv,
+          uiState.tvPagingItems.collectAsLazyPagingItems()
+        ) { movieId ->
+          showItem(movieId, ITEM_TYPE_TV_SHOW)
+        }
+      }
     }
+  }
 }
 
 
 @Composable
 fun MoviesRow(
-    @StringRes titleId: Int,
-    pagingItems: LazyPagingItems<CardUiState>,
-    onItemClick: (Long) -> Unit
+  @StringRes titleId: Int,
+  pagingItems: LazyPagingItems<CardUiState>,
+  onItemClick: (Long) -> Unit
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(
-            text = stringResource(id = titleId),
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(horizontal = 16.dp)
+  Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Text(
+      text = stringResource(id = titleId),
+      style = MaterialTheme.typography.titleLarge,
+      modifier = Modifier.padding(horizontal = 16.dp)
+    )
+    LazyRow(
+      horizontalArrangement = Arrangement.spacedBy(16.dp),
+      contentPadding = PaddingValues(horizontal = 16.dp),
+      modifier = Modifier
+        .height(332.dp)
+        .fillMaxWidth()
+    ) {
+      items(
+        count = pagingItems.itemCount,
+        key = pagingItems.itemKey(),
+        contentType = pagingItems.itemContentType()
+      ) { index ->
+        val item = pagingItems[index]
+        MovieItem(
+          uiState = item!!,
+          onClick = { onItemClick(item.id) },
+          modifier = Modifier.width(175.dp)
         )
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            modifier = Modifier.height(332.dp)
-        ) {
-            items(pagingItems) { movie ->
-                MovieItem(
-                    uiState = movie!!,
-                    onClick = { onItemClick(movie.id) },
-                    modifier = Modifier.width(175.dp)
-                )
-            }
-        }
+      }
     }
+  }
 }
 
 

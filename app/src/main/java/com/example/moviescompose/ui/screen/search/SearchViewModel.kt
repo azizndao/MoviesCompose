@@ -13,20 +13,20 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 
 class SearchViewModel(
-    private val apiRepository: MovieApiService,
-    app: Application
+  private val apiRepository: MovieApiService,
+  app: Application
 ) : AndroidViewModel(app) {
 
 
-    private val searchQuery = MutableStateFlow("")
+  private val searchQuery = MutableStateFlow("")
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val dataFlow = searchQuery.flatMapLatest { query ->
-        Pager(PagingConfig(pageSize = 20)) { MovieSearchPagingSource(query, apiRepository) }
-            .flow.cachedIn(viewModelScope)
-    }
+  @OptIn(ExperimentalCoroutinesApi::class)
+  val dataFlow = searchQuery.flatMapLatest { query ->
+    Pager(PagingConfig(pageSize = 20)) { MovieSearchPagingSource(query, apiRepository) }
+      .flow.cachedIn(viewModelScope)
+  }
 
-    fun updateQuery(value: String) {
-        searchQuery.value = value
-    }
+  fun updateQuery(value: String) {
+    searchQuery.value = value
+  }
 }

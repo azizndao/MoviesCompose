@@ -24,78 +24,78 @@ import com.example.moviescompose.R
 
 @OptIn(ExperimentalFoundationApi::class)
 fun LazyGridScope.loadingStateItem(
-    loadState: LoadState,
-    onRetry: () -> Unit
+  loadState: LoadState,
+  onRetry: () -> Unit
 ) {
 
-    when (loadState) {
-        is LoadState.Error -> item(span = { GridItemSpan(maxLineSpan) }) {
-            ErrorMessage(modifier = Modifier.animateItemPlacement(), loadState, onRetry)
-        }
-
-        LoadState.Loading -> item(span = { GridItemSpan(maxLineSpan) }) {
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .animateItemPlacement()
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp)
-                    .wrapContentSize()
-            )
-        }
-
-        is LoadState.NotLoading -> {
-        }
+  when (loadState) {
+    is LoadState.Error -> item(span = { GridItemSpan(maxLineSpan) }) {
+      ErrorMessage(modifier = Modifier.animateItemPlacement(), loadState, onRetry)
     }
+
+    LoadState.Loading -> item(span = { GridItemSpan(maxLineSpan) }) {
+      CircularProgressIndicator(
+        modifier = Modifier
+          .animateItemPlacement()
+          .fillMaxWidth()
+          .padding(vertical = 16.dp)
+          .wrapContentSize()
+      )
+    }
+
+    is LoadState.NotLoading -> {
+    }
+  }
 }
 
 
 @OptIn(ExperimentalFoundationApi::class)
 fun LazyListScope.loadingStateItem(
-    loadState: LoadState,
-    onRetry: () -> Unit
+  loadState: LoadState,
+  onRetry: () -> Unit
 ) {
 
-    when (loadState) {
-        is LoadState.Error -> item {
-            ErrorMessage(modifier = Modifier.animateItemPlacement(), loadState, onRetry)
-        }
-
-        LoadState.Loading -> item {
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .animateItemPlacement()
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp)
-                    .wrapContentSize()
-            )
-        }
-
-        is LoadState.NotLoading -> {
-        }
+  when (loadState) {
+    is LoadState.Error -> item {
+      ErrorMessage(modifier = Modifier.animateItemPlacement(), loadState, onRetry)
     }
+
+    LoadState.Loading -> item {
+      CircularProgressIndicator(
+        modifier = Modifier
+          .animateItemPlacement()
+          .fillMaxWidth()
+          .padding(vertical = 16.dp)
+          .wrapContentSize()
+      )
+    }
+
+    is LoadState.NotLoading -> {
+    }
+  }
 }
 
 @Composable
 private fun ErrorMessage(
-    modifier: Modifier = Modifier,
-    loadState: LoadState.Error,
-    onRetry: () -> Unit
+  modifier: Modifier = Modifier,
+  loadState: LoadState.Error,
+  onRetry: () -> Unit
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = loadState.error.localizedMessage
-                ?: stringResource(id = R.string.unknown),
-            textAlign = TextAlign.Center
-        )
+  Column(
+    modifier = modifier
+      .fillMaxWidth()
+      .padding(24.dp),
+    verticalArrangement = Arrangement.spacedBy(24.dp),
+    horizontalAlignment = Alignment.CenterHorizontally
+  ) {
+    Text(
+      text = loadState.error.localizedMessage
+        ?: stringResource(id = R.string.unknown),
+      textAlign = TextAlign.Center
+    )
 
-        Button(onClick = { onRetry() }) {
-            Text(text = stringResource(id = R.string.retry))
-        }
+    Button(onClick = { onRetry() }) {
+      Text(text = stringResource(id = R.string.retry))
     }
+  }
 }

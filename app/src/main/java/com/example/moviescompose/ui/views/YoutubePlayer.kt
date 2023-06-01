@@ -1,6 +1,5 @@
 package com.example.moviescompose.ui.views
 
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,17 +13,17 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTube
 @Composable
 fun YouTubePlayerItem(video: Video, modifier: Modifier = Modifier) {
 
-    AndroidView(
-        modifier = modifier.fillMaxSize(),
-        factory = { context ->
-            YouTubePlayerView(context).apply {
-                findViewTreeLifecycleOwner()?.lifecycle?.addObserver(this)
-                addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
-                    override fun onReady(youTubePlayer: YouTubePlayer) {
-                        youTubePlayer.cueVideo(video.key, 0f)
-                    }
-                })
-            }
-        }
-    )
+  AndroidView(
+    modifier = modifier.fillMaxSize(),
+    factory = { context ->
+      YouTubePlayerView(context).apply {
+        findViewTreeLifecycleOwner()?.lifecycle?.addObserver(this)
+        addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
+          override fun onReady(youTubePlayer: YouTubePlayer) {
+            youTubePlayer.cueVideo(video.key, 0f)
+          }
+        })
+      }
+    }
+  )
 }

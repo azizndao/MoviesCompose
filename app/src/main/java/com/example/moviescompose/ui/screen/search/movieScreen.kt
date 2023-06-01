@@ -13,15 +13,15 @@ const val SEARCH_ROUTE = "search"
 fun NavHostController.navigateToSearch() = navigate(SEARCH_ROUTE)
 
 fun NavGraphBuilder.searchDestination(showItem: (Long, String) -> Unit) {
-    composable(SEARCH_ROUTE) {
-        SearchScreen(showItem)
-    }
+  composable(SEARCH_ROUTE) {
+    SearchScreen(showItem)
+  }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SearchScreen(showItem: (id: Long, type: String) -> Unit) {
-    Scaffold { innerPadding ->
-        LazyColumn(contentPadding = innerPadding) {}
-    }
+  Scaffold { innerPadding ->
+    LazyColumn(contentPadding = innerPadding) {}
+  }
 }

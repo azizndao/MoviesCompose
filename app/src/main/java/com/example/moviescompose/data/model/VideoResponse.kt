@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class VideoResponse(
-    val id: Long? = null,
-    val results: List<Video>
+  val id: Long? = null,
+  val results: List<Video>
 )

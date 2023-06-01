@@ -14,32 +14,32 @@ import kotlinx.coroutines.flow.map
 
 class UserPreferences(private val context: Context) {
 
-    private val dataStore = PreferenceDataStoreFactory.create(
-        corruptionHandler = ReplaceFileCorruptionHandler(produceNewData = { emptyPreferences() }),
-    ) {
-        context.preferencesDataStoreFile("user_settings.pb")
+  private val dataStore = PreferenceDataStoreFactory.create(
+    corruptionHandler = ReplaceFileCorruptionHandler(produceNewData = { emptyPreferences() }),
+  ) {
+    context.preferencesDataStoreFile("user_settings.pb")
+  }
+
+  fun sortFlow() = dataStore.data.map { preferences ->
+    val key = preferences[keySortKey]
+      ?: SortKey.POPULARITY.key
+
+    val sortKey = SortKey.values().find { it.key == key }!!.key
+    val sortAscendant = preferences[keySortAscendant] ?: false
+    sortKey to sortAscendant
+  }
+
+  suspend fun setSort(key: String, ascendant: Boolean) {
+    dataStore.edit { preferences ->
+      preferences[keySortAscendant] =
+        if (preferences[keySortKey] == key) !ascendant else ascendant
+      preferences[keySortKey] = key
     }
+  }
 
-    fun sortFlow() = dataStore.data.map { preferences ->
-        val key = preferences[keySortKey]
-            ?: SortKey.POPULARITY.key
+  fun getTranslation(): Flow<String> = dataStore.data.map { it[keyTranslation] ?: "en-US" }
 
-        val sortKey = SortKey.values().find { it.key == key }!!.key
-        val sortAscendant = preferences[keySortAscendant] ?: false
-        sortKey to sortAscendant
-    }
-
-    suspend fun setSort(key: String, ascendant: Boolean) {
-        dataStore.edit { preferences ->
-            preferences[keySortAscendant] =
-                if (preferences[keySortKey] == key) !ascendant else ascendant
-            preferences[keySortKey] = key
-        }
-    }
-
-    fun getTranslation(): Flow<String> = dataStore.data.map { it[keyTranslation] ?: "en-US" }
-
-    suspend fun setTranslation(code: String) = dataStore.edit { it[keyTranslation] = code }
+  suspend fun setTranslation(code: String) = dataStore.edit { it[keyTranslation] = code }
 }
 
 

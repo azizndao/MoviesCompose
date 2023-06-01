@@ -1,7 +1,6 @@
 package com.example.moviescompose
 
 import android.app.Application
-import com.example.moviescompose.BuildConfig
 import com.example.moviescompose.data.RepoModule
 import com.example.moviescompose.ui.UiModule
 import com.example.moviescompose.utils.UtilsModule
@@ -13,17 +12,17 @@ import timber.log.Timber
 
 class App : Application() {
 
-    override fun onCreate() {
-        super.onCreate()
+  override fun onCreate() {
+    super.onCreate()
 
-        if (BuildConfig.DEBUG) {
-            Timber.plant(Timber.DebugTree())
-        }
-
-        startKoin {
-            androidLogger()
-            androidContext(this@App)
-            modules(RepoModule, UtilsModule, UiModule)
-        }
+    if (BuildConfig.DEBUG) {
+      Timber.plant(Timber.DebugTree())
     }
+
+    startKoin {
+      androidLogger()
+      androidContext(this@App)
+      modules(RepoModule, UtilsModule, UiModule)
+    }
+  }
 }

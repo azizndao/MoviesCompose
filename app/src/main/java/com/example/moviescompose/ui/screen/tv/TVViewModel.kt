@@ -19,39 +19,39 @@ import com.example.moviescompose.data.model.toUiState
 import kotlinx.coroutines.flow.map
 
 class TVViewModel(
-    private val apiService: TVApiService,
-    app: Application
+  private val apiService: TVApiService,
+  app: Application
 ) : AndroidViewModel(app) {
 
-    var selectedTabIndex: Int by mutableStateOf(0)
-        private set
+  var selectedTabIndex: Int by mutableStateOf(0)
+    private set
 
-    val selectedTabData by derivedStateOf { tabViews[tabs[selectedTabIndex]]!! }
+  val selectedTabData by derivedStateOf { tabViews[tabs[selectedTabIndex]]!! }
 
-    private val pagingConfig = PagingConfig(pageSize = 20, enablePlaceholders = true)
+  private val pagingConfig = PagingConfig(pageSize = 20, enablePlaceholders = true)
 
-    val tabs = listOf(R.string.popular, R.string.aring_today, R.string.on_tv, R.string.top_rated)
+  val tabs = listOf(R.string.popular, R.string.aring_today, R.string.on_tv, R.string.top_rated)
 
-    private var tabViews = mapOf(
-        R.string.popular to Pager(pagingConfig) {
-            TheMoviesPagingSource { apiService.getPopular(it) }
-        }.flow.map { it.map(TV::toUiState) }.cachedIn(viewModelScope),
+  private var tabViews = mapOf(
+    R.string.popular to Pager(pagingConfig) {
+      TheMoviesPagingSource { apiService.getPopular(it) }
+    }.flow.map { it.map(TV::toUiState) }.cachedIn(viewModelScope),
 
-        R.string.aring_today to Pager(pagingConfig) {
-            TheMoviesPagingSource { apiService.getAiringToday(it) }
-        }.flow.map { it.map(TV::toUiState) }.cachedIn(viewModelScope),
+    R.string.aring_today to Pager(pagingConfig) {
+      TheMoviesPagingSource { apiService.getAiringToday(it) }
+    }.flow.map { it.map(TV::toUiState) }.cachedIn(viewModelScope),
 
-        R.string.on_tv to Pager(pagingConfig) {
-            TheMoviesPagingSource { apiService.getOnTv(it) }
-        }.flow.map { it.map(TV::toUiState) }.cachedIn(viewModelScope),
+    R.string.on_tv to Pager(pagingConfig) {
+      TheMoviesPagingSource { apiService.getOnTv(it) }
+    }.flow.map { it.map(TV::toUiState) }.cachedIn(viewModelScope),
 
-        R.string.top_rated to Pager(pagingConfig) {
-            TheMoviesPagingSource { apiService.getTopRated(it) }
-        }.flow.map { it.map(TV::toUiState) }.cachedIn(viewModelScope),
-    )
+    R.string.top_rated to Pager(pagingConfig) {
+      TheMoviesPagingSource { apiService.getTopRated(it) }
+    }.flow.map { it.map(TV::toUiState) }.cachedIn(viewModelScope),
+  )
 
 
-    fun selectTab(index: Int) {
-        selectedTabIndex = index
-    }
+  fun selectTab(index: Int) {
+    selectedTabIndex = index
+  }
 }

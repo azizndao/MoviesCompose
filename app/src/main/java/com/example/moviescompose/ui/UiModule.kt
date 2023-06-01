@@ -9,9 +9,9 @@ import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.dsl.module
 
 val UiModule = module {
-    viewModelOf(::HomeViewModel)
-    viewModelOf(::MovieViewModel)
-    viewModelOf(::TVViewModel)
-    viewModelOf(::DetailsViewModel)
-    viewModelOf(::SortViewModel)
+  viewModelOf(::HomeViewModel)
+  viewModelOf(::MovieViewModel)
+  viewModelOf(::TVViewModel)
+  viewModelOf(::DetailsViewModel)
+  viewModelOf(::SortViewModel)
 }

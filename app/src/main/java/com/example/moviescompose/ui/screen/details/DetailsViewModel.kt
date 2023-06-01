@@ -20,60 +20,60 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class DetailsViewModel(
-    private val id: Long,
-    @ItemType val type: String,
-    private val movieApiService: MovieApiService,
-    private val tvApiService: TVApiService,
-    private val preferences: UserPreferences,
+  private val id: Long,
+  @ItemType val type: String,
+  private val movieApiService: MovieApiService,
+  private val tvApiService: TVApiService,
+  private val preferences: UserPreferences,
 ) : ViewModel() {
 
-    var detailsUiState by mutableStateOf<DetailsUiState>(DetailsUiState.Loading)
-        private set
+  var detailsUiState by mutableStateOf<DetailsUiState>(DetailsUiState.Loading)
+    private set
 
-    init {
-        refresh()
-    }
+  init {
+    refresh()
+  }
 
-    private var job: Job? = null
+  private var job: Job? = null
 
-    fun refresh() {
-        detailsUiState = DetailsUiState.Loading
-        job?.cancel()
-        job = viewModelScope.launch {
-            detailsUiState = try {
-                val success = when (type) {
-                    ITEM_TYPE_MOVIE -> movieApiService.getMovieDetails(
-                        id,
-                        preferences.getTranslation().first()
-                    ).toUiState(getSimilarItems())
+  fun refresh() {
+    detailsUiState = DetailsUiState.Loading
+    job?.cancel()
+    job = viewModelScope.launch {
+      detailsUiState = try {
+        val success = when (type) {
+          ITEM_TYPE_MOVIE -> movieApiService.getMovieDetails(
+            id,
+            preferences.getTranslation().first()
+          ).toUiState(getSimilarItems())
 
-                    else -> tvApiService.getTvDetails(
-                        id,
-                        preferences.getTranslation().first()
-                    ).toUiState(getSimilarItems())
-                }
-                Timber.e(success.toString())
-                success
-            } catch (e: Exception) {
-                DetailsUiState.Error(e)
-            }
+          else -> tvApiService.getTvDetails(
+            id,
+            preferences.getTranslation().first()
+          ).toUiState(getSimilarItems())
         }
+        Timber.e(success.toString())
+        success
+      } catch (e: Exception) {
+        DetailsUiState.Error(e)
+      }
     }
+  }
 
-    private suspend fun getSimilarItems() = when (type) {
-        ITEM_TYPE_MOVIE -> movieApiService.getSimilarMovies(
-            id = id,
-            page = 1,
-            language = preferences.getTranslation().first()
-        ).results.map(Movie::toUiState)
+  private suspend fun getSimilarItems() = when (type) {
+    ITEM_TYPE_MOVIE -> movieApiService.getSimilarMovies(
+      id = id,
+      page = 1,
+      language = preferences.getTranslation().first()
+    ).results.map(Movie::toUiState)
 
-        ITEM_TYPE_TV_SHOW -> tvApiService.getSimilarTvs(
-            id = id,
-            page = 1,
-            language = preferences.getTranslation().first()
-        ).results.map(TV::toUiState)
+    ITEM_TYPE_TV_SHOW -> tvApiService.getSimilarTvs(
+      id = id,
+      page = 1,
+      language = preferences.getTranslation().first()
+    ).results.map(TV::toUiState)
 
-        else -> throw IllegalArgumentException()
-    }
+    else -> throw IllegalArgumentException()
+  }
 
 }

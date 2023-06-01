@@ -5,12 +5,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Network(
-    val id: Long,
-    val name: String,
+  val id: Long,
+  val name: String,
 
-    @SerialName("logo_path")
-    val logoPath: String? = null,
+  @SerialName("logo_path")
+  val logoPath: String? = null,
 
-    @SerialName("origin_country")
-    val originCountry: String
+  @SerialName("origin_country")
+  val originCountry: String
 )
