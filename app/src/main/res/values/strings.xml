@@ -32,4 +32,6 @@
     <string name="images">Images</string>
     <string name="videos">Videos</string>
     <string name="similar">Similar</string>
+    <string name="account">Account</string>
+    <string name="saved">Saved</string>
 </resources>

@@ -14,3 +14,5 @@ dependencyResolutionManagement {
 }
 rootProject.name = "trailer"
 include ':app'
+include ':core:model'
+include ':core:network'
